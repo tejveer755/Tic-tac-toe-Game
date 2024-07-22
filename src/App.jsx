@@ -3,35 +3,26 @@ import "./App.css";
 
 const App = () => {
   const [currentPlayer, setCurrentPlayer] = useState("X");
-
   const [board, setBoard] = useState(
-    JSON.parse(localStorage.getItem("board")) || Array(9).fill(null)
+    JSON.parse(localStorage.getItem('board')) || Array(9).fill(null)
   );
-  const [isPlayerTurn, setIsPlayerTurn] = useState(true); // Track player turn
+  const [isPlayerTurn, setIsPlayerTurn] = useState(true);
   const [gameMode, setGameMode] = useState(
-    localStorage.getItem("gameMode") || ""
-  ); // Retrieve game mode from localStorage
-  const [modeSelection, setModeSelection] = useState(false); // Track mode selection
+    localStorage.getItem('gameMode') || ""
+  );
 
   useEffect(() => {
-    const savedGameMode = localStorage.getItem("gameMode");
-    if (savedGameMode) {
-      setGameMode(savedGameMode);
-    }
-  }, []);
-
-  useEffect(() => {
-    localStorage.setItem("board", JSON.stringify(board));
+    localStorage.setItem('board', JSON.stringify(board));
     if (!isPlayerTurn && gameMode === 'computer') {
       const timer = setTimeout(() => {
         handleComputerMove();
-      }, 700); // Add a slight delay for the computer's move
+      }, 700);
       return () => clearTimeout(timer);
     }
   }, [board, isPlayerTurn, gameMode]);
 
   const handleClick = (id) => {
-    if (board[id] !== null || !isPlayerTurn || modeSelection) return;
+    if (board[id] !== null || !isPlayerTurn) return;
 
     const newBoard = [...board];
     newBoard[id] = currentPlayer;
@@ -42,19 +33,17 @@ const App = () => {
         alert(`Player ${currentPlayer} wins!`);
         resetGame();
       }, 10);
-    } else if (newBoard.every((cell) => cell !== null)) {
+    } else if (newBoard.every(cell => cell !== null)) {
       setTimeout(() => {
-        alert("It's a draw!");
+        alert('It\'s a draw!');
         resetGame();
       }, 10);
     } else {
-      if (gameMode === "computer") {
+      if (gameMode === 'computer') {
         setIsPlayerTurn(false);
-        setCurrentPlayer("O"); // Switch to computer's turn
+        setCurrentPlayer("O");
       } else {
-        setCurrentPlayer((prevPlayer) =>
-          prevPlayer === "X" ? "O" : "X"
-        );
+        setCurrentPlayer(currentPlayer === "X" ? "O" : "X");
       }
     }
   };
@@ -65,7 +54,6 @@ const App = () => {
       return acc;
     }, []);
 
-    // Attempt to win or block
     const winningMove = findBestMove(board, "O");
     const blockingMove = findBestMove(board, "X");
 
@@ -77,24 +65,22 @@ const App = () => {
           : emptyIndices[Math.floor(Math.random() * emptyIndices.length)];
 
     const newBoard = [...board];
-    newBoard[move] = "O"; // Computer is "O"
+    newBoard[move] = "O";
     setBoard(newBoard);
 
     if (checkWinner(newBoard)) {
       setTimeout(() => {
-        alert("Computer wins!");
+        alert(`Computer wins!`);
         resetGame();
       }, 10);
-    } else if (newBoard.every((cell) => cell !== null)) {
+    } else if (newBoard.every(cell => cell !== null)) {
       setTimeout(() => {
-        alert("It's a draw!");
+        alert('It\'s a draw!');
         resetGame();
       }, 10);
     } else {
       setIsPlayerTurn(true);
-      setCurrentPlayer((prevPlayer) =>
-        prevPlayer === "X" ? "O" : "X"
-      ); // Switch back to player's turn
+      setCurrentPlayer("X");
     }
   };
 
@@ -146,32 +132,26 @@ const App = () => {
   const resetGame = () => {
     setBoard(Array(9).fill(null));
     setCurrentPlayer("X");
-    setIsPlayerTurn(true); // Start with player's turn
-    setModeSelection(false); // Reset mode selection
+    setIsPlayerTurn(true);
   };
 
   const handleModeSelection = (mode) => {
     setGameMode(mode);
-    localStorage.setItem("gameMode", mode); // Save mode to localStorage
-    setModeSelection(true); // Set mode selection to true
+    localStorage.setItem('gameMode', mode);
+    resetGame();
   };
 
   return (
     <>
-      <h2>Made by: <a href="https://github.com/tejveer755">Tejveer Singh </a>🦅</h2>
-      {gameMode === ""  ? (
+      {gameMode === "" ? (
         <div className="homepage">
           <h1>Select Mode</h1>
-          <button onClick={() => handleModeSelection("computer")}>
-            Play with Computer
-          </button>
-          <button onClick={() => handleModeSelection("friend")}>
-            Play with Friend
-          </button>
+          <button onClick={() => handleModeSelection('computer')}>Play with Computer</button>
+          <button onClick={() => handleModeSelection('friend')}>Play with Friend</button>
         </div>
       ) : (
         <>
-          <h1 className="status">Current Mode : {gameMode}</h1>
+          <h1 className="status">Current Mode: {gameMode}</h1>
           <h1 className="status">Current Player: {currentPlayer}</h1>
           <div className="game-container">
             <div className="game-board">
@@ -187,12 +167,8 @@ const App = () => {
             </div>
           </div>
           <div className="btns">
-            <button className="reset-btn" onClick={resetGame}>
-              Restart
-            </button>
-            <button className="reset-btn" onClick={() => handleModeSelection("")}>
-              Change Mode
-            </button>
+            <button className="reset-btn" onClick={resetGame}>Restart</button>
+            <button className="reset-btn" onClick={() => handleModeSelection("")}>Change Mode</button>
           </div>
         </>
       )}
