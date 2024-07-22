@@ -152,6 +152,7 @@ const App = () => {
 
   return (
     <>
+        <h2>Made by: <a href="https://github.com/tejveer755">Tejveer Singh </a>🦅</h2>
       {gameMode === null ? (
         <div className="homepage">
           <h1>Select Mode</h1>
@@ -164,6 +165,7 @@ const App = () => {
         </div>
       ) : (
         <>
+            <h1  className="status">Current Mode : {gameMode}</h1>
           <h1 className="status">Current Player: {currentPlayer}</h1>
           <div className="game-container">
             <div className="game-board">
