@@ -3,15 +3,16 @@ import "./App.css";
 
 const App = () => {
   const [currentPlayer, setCurrentPlayer] = useState("X");
+
   const [board, setBoard] = useState(
     JSON.parse(localStorage.getItem("board")) || Array(9).fill(null)
   );
   const [isPlayerTurn, setIsPlayerTurn] = useState(true); // Track player turn
   const [gameMode, setGameMode] = useState(
-    localStorage.getItem("gameMode") || null
+    localStorage.getItem("gameMode") || ""
   ); // Retrieve game mode from localStorage
+  const [modeSelection, setModeSelection] = useState(false); // Track mode selection
 
-  // Set game mode from local storage on component mount
   useEffect(() => {
     const savedGameMode = localStorage.getItem("gameMode");
     if (savedGameMode) {
@@ -21,7 +22,7 @@ const App = () => {
 
   useEffect(() => {
     localStorage.setItem("board", JSON.stringify(board));
-    if (!isPlayerTurn && gameMode === "computer") {
+    if (!isPlayerTurn && gameMode === 'computer') {
       const timer = setTimeout(() => {
         handleComputerMove();
       }, 700); // Add a slight delay for the computer's move
@@ -30,7 +31,7 @@ const App = () => {
   }, [board, isPlayerTurn, gameMode]);
 
   const handleClick = (id) => {
-    if (board[id] !== null || !isPlayerTurn) return;
+    if (board[id] !== null || !isPlayerTurn || modeSelection) return;
 
     const newBoard = [...board];
     newBoard[id] = currentPlayer;
@@ -51,7 +52,9 @@ const App = () => {
         setIsPlayerTurn(false);
         setCurrentPlayer("O"); // Switch to computer's turn
       } else {
-        setCurrentPlayer(currentPlayer === "X" ? "O" : "X");
+        setCurrentPlayer((prevPlayer) =>
+          prevPlayer === "X" ? "O" : "X"
+        );
       }
     }
   };
@@ -70,8 +73,8 @@ const App = () => {
       winningMove !== -1
         ? winningMove
         : blockingMove !== -1
-        ? blockingMove
-        : emptyIndices[Math.floor(Math.random() * emptyIndices.length)];
+          ? blockingMove
+          : emptyIndices[Math.floor(Math.random() * emptyIndices.length)];
 
     const newBoard = [...board];
     newBoard[move] = "O"; // Computer is "O"
@@ -79,7 +82,7 @@ const App = () => {
 
     if (checkWinner(newBoard)) {
       setTimeout(() => {
-        alert(`Computer wins!`);
+        alert("Computer wins!");
         resetGame();
       }, 10);
     } else if (newBoard.every((cell) => cell !== null)) {
@@ -89,7 +92,9 @@ const App = () => {
       }, 10);
     } else {
       setIsPlayerTurn(true);
-      setCurrentPlayer("X"); // Switch back to player's turn
+      setCurrentPlayer((prevPlayer) =>
+        prevPlayer === "X" ? "O" : "X"
+      ); // Switch back to player's turn
     }
   };
 
@@ -142,18 +147,19 @@ const App = () => {
     setBoard(Array(9).fill(null));
     setCurrentPlayer("X");
     setIsPlayerTurn(true); // Start with player's turn
+    setModeSelection(false); // Reset mode selection
   };
 
   const handleModeSelection = (mode) => {
     setGameMode(mode);
     localStorage.setItem("gameMode", mode); // Save mode to localStorage
-    resetGame(); // Reset the game when mode changes
+    setModeSelection(true); // Set mode selection to true
   };
 
   return (
     <>
-        <h2>Made by: <a href="https://github.com/tejveer755">Tejveer Singh </a>🦅</h2>
-      {gameMode=== "" ? (
+      <h2>Made by: <a href="https://github.com/tejveer755">Tejveer Singh </a>🦅</h2>
+      {gameMode === ""  ? (
         <div className="homepage">
           <h1>Select Mode</h1>
           <button onClick={() => handleModeSelection("computer")}>
@@ -165,7 +171,7 @@ const App = () => {
         </div>
       ) : (
         <>
-            <h1  className="status">Current Mode : {gameMode}</h1>
+          <h1 className="status">Current Mode : {gameMode}</h1>
           <h1 className="status">Current Player: {currentPlayer}</h1>
           <div className="game-container">
             <div className="game-board">
@@ -184,7 +190,7 @@ const App = () => {
             <button className="reset-btn" onClick={resetGame}>
               Restart
             </button>
-            <button className="reset-btn" onClick={() => handleModeSelection('')}>
+            <button className="reset-btn" onClick={() => handleModeSelection("")}>
               Change Mode
             </button>
           </div>
