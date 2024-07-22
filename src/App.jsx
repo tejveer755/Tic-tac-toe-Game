@@ -8,7 +8,7 @@ const App = () => {
   );
   const [isPlayerTurn, setIsPlayerTurn] = useState(true); // Track player turn
   const [gameMode, setGameMode] = useState(
-    localStorage.getItem('gameMode') || null
+    localStorage.getItem('gameMode') || ""
   ); // Retrieve game mode from localStorage
 
   useEffect(() => {
@@ -145,7 +145,7 @@ const App = () => {
   return (
     <>
     <h2>Made by: <a href="https://github.com/tejveer755">Tejveer Singh </a>🦅</h2>
-      {gameMode === null ? (
+      {!gameMode  ? (
         <div className="homepage">
           <h1>Select Mode</h1>
           <button onClick={() => handleModeSelection('computer')}>Play with Computer</button>
