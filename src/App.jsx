@@ -153,7 +153,7 @@ const App = () => {
   return (
     <>
         <h2>Made by: <a href="https://github.com/tejveer755">Tejveer Singh </a>🦅</h2>
-      {gameMode === null ? (
+      {!gameMode ? (
         <div className="homepage">
           <h1>Select Mode</h1>
           <button onClick={() => handleModeSelection("computer")}>
@@ -184,7 +184,7 @@ const App = () => {
             <button className="reset-btn" onClick={resetGame}>
               Restart
             </button>
-            <button className="reset-btn" onClick={() => handleModeSelection(null)}>
+            <button className="reset-btn" onClick={() => handleModeSelection('')}>
               Change Mode
             </button>
           </div>
