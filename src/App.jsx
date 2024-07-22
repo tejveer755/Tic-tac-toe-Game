@@ -4,16 +4,24 @@ import "./App.css";
 const App = () => {
   const [currentPlayer, setCurrentPlayer] = useState("X");
   const [board, setBoard] = useState(
-    JSON.parse(localStorage.getItem('board')) || Array(9).fill(null)
+    JSON.parse(localStorage.getItem("board")) || Array(9).fill(null)
   );
   const [isPlayerTurn, setIsPlayerTurn] = useState(true); // Track player turn
   const [gameMode, setGameMode] = useState(
-    localStorage.getItem('gameMode') || ""
+    localStorage.getItem("gameMode") || null
   ); // Retrieve game mode from localStorage
 
+  // Set game mode from local storage on component mount
   useEffect(() => {
-    localStorage.setItem('board', JSON.stringify(board));
-    if (!isPlayerTurn && gameMode === 'computer') {
+    const savedGameMode = localStorage.getItem("gameMode");
+    if (savedGameMode) {
+      setGameMode(savedGameMode);
+    }
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem("board", JSON.stringify(board));
+    if (!isPlayerTurn && gameMode === "computer") {
       const timer = setTimeout(() => {
         handleComputerMove();
       }, 700); // Add a slight delay for the computer's move
@@ -33,13 +41,13 @@ const App = () => {
         alert(`Player ${currentPlayer} wins!`);
         resetGame();
       }, 10);
-    } else if (newBoard.every(cell => cell !== null)) {
+    } else if (newBoard.every((cell) => cell !== null)) {
       setTimeout(() => {
-        alert('It\'s a draw!');
+        alert("It's a draw!");
         resetGame();
       }, 10);
     } else {
-      if (gameMode === 'computer') {
+      if (gameMode === "computer") {
         setIsPlayerTurn(false);
         setCurrentPlayer("O"); // Switch to computer's turn
       } else {
@@ -62,8 +70,8 @@ const App = () => {
       winningMove !== -1
         ? winningMove
         : blockingMove !== -1
-          ? blockingMove
-          : emptyIndices[Math.floor(Math.random() * emptyIndices.length)];
+        ? blockingMove
+        : emptyIndices[Math.floor(Math.random() * emptyIndices.length)];
 
     const newBoard = [...board];
     newBoard[move] = "O"; // Computer is "O"
@@ -74,9 +82,9 @@ const App = () => {
         alert(`Computer wins!`);
         resetGame();
       }, 10);
-    } else if (newBoard.every(cell => cell !== null)) {
+    } else if (newBoard.every((cell) => cell !== null)) {
       setTimeout(() => {
-        alert('It\'s a draw!');
+        alert("It's a draw!");
         resetGame();
       }, 10);
     } else {
@@ -138,22 +146,24 @@ const App = () => {
 
   const handleModeSelection = (mode) => {
     setGameMode(mode);
-    localStorage.setItem('gameMode', mode); // Save mode to localStorage
+    localStorage.setItem("gameMode", mode); // Save mode to localStorage
     resetGame(); // Reset the game when mode changes
   };
 
   return (
     <>
-    <h2>Made by: <a href="https://github.com/tejveer755">Tejveer Singh </a>🦅</h2>
-      {!gameMode  ? (
+      {gameMode === null ? (
         <div className="homepage">
           <h1>Select Mode</h1>
-          <button onClick={() => handleModeSelection('computer')}>Play with Computer</button>
-          <button onClick={() => handleModeSelection('friend')}>Play with Friend</button>
+          <button onClick={() => handleModeSelection("computer")}>
+            Play with Computer
+          </button>
+          <button onClick={() => handleModeSelection("friend")}>
+            Play with Friend
+          </button>
         </div>
       ) : (
         <>
-          <h1  className="status">Current Mode : {gameMode}</h1>
           <h1 className="status">Current Player: {currentPlayer}</h1>
           <div className="game-container">
             <div className="game-board">
@@ -169,8 +179,12 @@ const App = () => {
             </div>
           </div>
           <div className="btns">
-            <button className="reset-btn" onClick={resetGame}>Restart</button>
-            <button className="reset-btn" onClick={() => handleModeSelection(null)}>Change Mode</button>
+            <button className="reset-btn" onClick={resetGame}>
+              Restart
+            </button>
+            <button className="reset-btn" onClick={() => handleModeSelection(null)}>
+              Change Mode
+            </button>
           </div>
         </>
       )}
